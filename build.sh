@@ -5,6 +5,8 @@ set -e
 declare -a packages=(
     fnm
     lando
+    ripgrep
+    starship
 )
 
 for package in "${packages[@]}"; do
