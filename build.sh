@@ -3,6 +3,7 @@
 set -e
 
 declare -a packages=(
+    fd
     fnm
     lando
     ripgrep
