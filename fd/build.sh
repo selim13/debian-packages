@@ -1,12 +1,14 @@
 #!/usr/bin/env bash
 
+app_name=fd
+github_repo="sharkdp/fd"
+
+source ../.env
+source ../functions.sh
 set -e
 
-github_repo="sharkdp/fd"
-api_url="https://api.github.com/repos/${github_repo}/releases/latest"
-tag=$(curl -s $api_url | jq -r '.name')
+tag=$(github_latest_tag $github_repo)
 version=$(echo $tag | sed s/v//)
-
 declare -A archs=(
     [amd64]=fd_${version}_amd64.deb
     [i386]=fd_${version}_i386.deb
@@ -17,13 +19,19 @@ for arch in "${!archs[@]}"; do
     filename=${archs[$arch]}
     package_name="${filename%.*}"
 
-    if [ ! -z "$(aptly package show ${package_name})" ]; then
-        echo "${filename%.*} already in repository"
+    if deb_exists "$package_name"; then
+        echo "$package_name already in repository"
         continue
     fi
 
-    wget -O "${filename}" "https://github.com/${github_repo}/releases/download/${tag}/${filename}"
+    curl --silent --location "https://github.com/${github_repo}/releases/download/${tag}/${filename}" --output "$filename"
     
-    aptly repo add deb-cli "$filename"
+    push_deb "$filename"
+
     rm -f "$filename"
+    updated=true
 done
+
+if [ ! -z $updated ]; then
+    notify_updated "$app_name" "$version"
+fi

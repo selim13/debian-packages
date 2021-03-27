@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 
-github_repo="starship/starship"
-app_name=starship
+app_name=psysh
+github_repo="bobthecow/psysh"
 revision=1
-description="The minimal, blazing-fast, and infinitely customizable prompt for any shell!"
-homepage="https://starship.rs"
-license="GPL3"
+description="A runtime developer console, interactive debugger and REPL for PHP"
+homepage="https://psysh.org"
+license="MIT"
 
 source ../.env
 source ../functions.sh
@@ -14,10 +14,7 @@ set -e
 tag=$(github_latest_tag $github_repo)
 version=$(echo $tag | sed s/v//)
 declare -A archs=(
-    [amd64]=starship-x86_64-unknown-linux-musl.tar.gz
-    [i386]=starship-i686-unknown-linux-musl.tar.gz
-    [arm64]=starship-aarch64-unknown-linux-musl.tar.gz
-    [arm32]=starship-arm-unknown-linux-musleabihf.tar.gz
+    [all]="psysh-${tag}-compat.tar.gz"
 )
 
 for arch in "${!archs[@]}"; do
@@ -45,10 +42,11 @@ for arch in "${!archs[@]}"; do
     echo "License: ${license}" >> "$package_name/DEBIAN/control"
 
     curl --silent --location "https://github.com/${github_repo}/releases/download/${tag}/${filename}" --output "$filename"
-    tar --extract --file="$filename" --directory="$package_name/usr/bin" starship
-    chmod 755 "$package_name/usr/bin/starship"
+    
+    tar --extract --file="$filename" --directory="$package_name/usr/bin" psysh    
+    chmod 755 "$package_name/usr/bin/psysh"
 
-    fakeroot dpkg-deb --build "$package_name"
+    fakeroot dpkg-deb --build "$package_name"    
     push_deb "$package_name.deb"
 
     rm -rf "$package_name" "$package_name.deb"
