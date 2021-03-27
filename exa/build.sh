@@ -19,7 +19,7 @@ package_name="${app_name}_${version}-${revision}_${arch}"
 
 if deb_exists "$package_name"; then
     echo "$package_name already in repository"
-    continue
+    exit
 fi
 
 mkdir -p "$package_name"

@@ -14,6 +14,7 @@ declare -a packages=(
     psysh
     ripgrep
     starship
+    wp-cli
 )
 
 for package in "${packages[@]}"; do
