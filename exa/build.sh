@@ -40,7 +40,7 @@ echo "License: ${license}" >> "$package_name/DEBIAN/control"
 curl --silent --location "https://github.com/${github_repo}/releases/download/${tag}/${filename}" --output "$filename"
 
 unzip -q -o -j "$filename"
-install --strip exa-linux-x86_64 "$package_name/usr/bin/exa"
+install exa-linux-x86_64 "$package_name/usr/bin/exa"
 
 fakeroot dpkg-deb --build "$package_name"    
 push_deb "$package_name.deb"

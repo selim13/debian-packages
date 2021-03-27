@@ -4,10 +4,13 @@ source .env
 source ./functions.sh
 
 declare -a packages=(
+    docker-ctop
     exa
     fd
     fnm
+    gping
     lando
+    oha
     psysh
     ripgrep
     starship
