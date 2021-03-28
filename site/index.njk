@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta content="IE=edge" http-equiv="X-UA-Compatible">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>{{ title }}</title>
+
+    <style>
+      *,
+      *::after,
+      *::before {
+        box-sizing: border-box;
+      }
+
+      html {
+        font-family: sans-serif;
+        font-size: 18px;
+        font-weight: 400;
+      }
+
+      body {
+        margin: 0;
+        background-color: #1F2937;
+        color: #F9FAFB;
+      }
+
+      main {
+        width: 100%;
+        max-width: 1024px;
+        margin: 0 auto;
+        padding: 0 20px;
+      }
+
+      h1 {
+        text-align: center;
+      }
+
+      pre {
+        overflow-x: auto;
+        padding: 20px;
+        font-size: 16px;
+        background-color: #374151;
+      }
+
+      a {
+        font-weight: 600;
+        color: #7DD3FC;
+      }
+
+      a:hover {
+        color: #BAE6FD;
+      }
+
+      a:focus-visible {
+        color: #BAE6FD;
+        outline: 3px solid #BAE6FD;
+        outline-offset: 2px;
+      }
+
+      ul li {
+        margin-bottom: 0.3em;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>Selim's personal repository for debian-based distros</h1>
+      <p>
+                This repository contains packages of the open source software that 
+                                                                                                                                            I frequently use, mostly automatically pulled directly from the
+                                                                                                                                            github release pages and crudely packed with dpkg-deb.
+                                                                                                                                            Tested on Ubuntu 20.04 and nothing more.
+            </p>
+
+      <p>To use this repository, populate your apt sources list and import the GPG key:</p>
+      <pre>echo "deb http://deb.selim13.ru/repo/ sid main" | sudo tee /etc/apt/sources.list.d/deb-selim13-ru.list
+wget -qO - http://deb.selim13.ru/repo.gpg.key | sudo apt-key add -</pre>
+
+      <ul>
+        {% for package in packages %}
+          <li>
+            {% if package.homepage %}
+              <a href="{{ package.homepage }}">{{ package.name }}</a>
+            {% else %}
+              {{ package.name }}
+            {% endif %}
+
+            {{ package.version }}
+
+            {% if package.description %}
+                            &mdash;
+                            {{ package.description }}
+            {% endif %}
+
+                        [{{ package.archs | join(" ") }}]
+                    </li>
+        {% endfor %}
+      </ul>
+
+      <p>
+        <a href="http://deb.selim13.ru/repo/">Repository directory listing</a><br>
+        <a href="https://github.com/selim13/linux-packages/">
+          Scripts for updating packages and this page
+        </a>
+      </p>
+    </main>
+  </body>
+</html>

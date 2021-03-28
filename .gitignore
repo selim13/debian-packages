@@ -4,3 +4,5 @@
 *.zip
 *.gz
 *.log
+
+node_modules
