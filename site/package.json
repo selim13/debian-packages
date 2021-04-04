@@ -4,15 +4,16 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "start": "eleventy --serve",
-    "build": "eleventy"
+    "start": "eleventy --serve dotenv_config_path=../.env",
+    "build": "eleventy dotenv_config_path=../.env"
   },
   "devDependencies": {
     "@11ty/eleventy": "^0.12.1",
     "prettier": "^2.2.1"
   },
   "dependencies": {
-    "node-fetch": "^2.6.1",
+    "debian-control": "^1.0.0",
+    "dotenv": "^8.2.0",
     "semver": "^7.3.5"
   }
 }

@@ -4,7 +4,10 @@
     <meta charset="UTF-8">
     <meta content="IE=edge" http-equiv="X-UA-Compatible">
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
-    <title>{{ title }}</title>
+    <title>Selim's personal repository for debian-based distros</title>
+    <link rel="icon" href="/favicon.ico">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+    <link rel="manifest" href="/manifest.webmanifest">
 
     <style>
       *,
@@ -44,7 +47,6 @@
       }
 
       a {
-        font-weight: 600;
         color: #7DD3FC;
       }
 
@@ -58,8 +60,12 @@
         outline-offset: 2px;
       }
 
+      .package-link {
+        font-weight: 600;
+      }
+
       ul li {
-        margin-bottom: 0.3em;
+        margin-bottom: 0.5em;
       }
     </style>
   </head>
@@ -67,21 +73,21 @@
     <main>
       <h1>Selim's personal repository for debian-based distros</h1>
       <p>
-                This repository contains packages of the open source software that 
-                                                                                                                                            I frequently use, mostly automatically pulled directly from the
-                                                                                                                                            github release pages and crudely packed with dpkg-deb.
-                                                                                                                                            Tested on Ubuntu 20.04 and nothing more.
-            </p>
+        This repository contains packages of the open source software that 
+        I frequently use, mostly automatically pulled directly from the
+        github release pages and crudely packed with dpkg-deb.
+        Tested on Ubuntu 20.04 and nothing more.
+      </p>
 
       <p>To use this repository, populate your apt sources list and import the GPG key:</p>
       <pre>echo "deb http://deb.selim13.ru/repo/ sid main" | sudo tee /etc/apt/sources.list.d/deb-selim13-ru.list
 wget -qO - http://deb.selim13.ru/repo.gpg.key | sudo apt-key add -</pre>
 
       <ul>
-        {% for package in packages %}
+        {% for package in debianPackages %}
           <li>
             {% if package.homepage %}
-              <a href="{{ package.homepage }}">{{ package.name }}</a>
+              <a href="{{ package.homepage }}" class="package-link">{{ package.name }}</a>
             {% else %}
               {{ package.name }}
             {% endif %}
@@ -89,17 +95,21 @@ wget -qO - http://deb.selim13.ru/repo.gpg.key | sudo apt-key add -</pre>
             {{ package.version }}
 
             {% if package.description %}
-                            &mdash;
-                            {{ package.description }}
+              &mdash;
+              {{ package.description | safe }}
             {% endif %}
 
-                        [{{ package.archs | join(" ") }}]
-                    </li>
+            {% set j = joiner(" ") %}
+            [{% for arch in package.archs -%}
+              {{- j() -}}
+              <a href="/repo/{{ arch.file }}">{{ arch.name }}</a>
+            {%- endfor %}]
+          </li>
         {% endfor %}
       </ul>
 
       <p>
-        <a href="http://deb.selim13.ru/repo/">Repository directory listing</a><br>
+        <a href="/repo/">Repository directory listing</a><br>
         <a href="https://github.com/selim13/linux-packages/">
           Scripts for updating packages and this page
         </a>
