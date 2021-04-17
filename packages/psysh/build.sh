@@ -7,8 +7,7 @@ description="A runtime developer console, interactive debugger and REPL for PHP"
 homepage="https://psysh.org"
 license="MIT"
 
-source ../.env
-source ../functions.sh
+source ../../functions.sh
 set -e
 
 tag=$(github_latest_tag $github_repo)
@@ -21,7 +20,7 @@ for arch in "${!archs[@]}"; do
     filename=${archs[$arch]}
     package_name="${app_name}_${version}-${revision}_${arch}"
 
-    if deb_exists "$package_name"; then
+    if deb_exists "$app_name" "${version}-${revision}" "$arch"; then
         echo "$package_name already in repository"
         continue
     fi
@@ -55,6 +54,4 @@ for arch in "${!archs[@]}"; do
     updated=true
 done
 
-if [ ! -z $updated ]; then
-    notify_updated "$app_name" "${version}-${revision}"
-fi
+[ ! -z $updated ] && notify_updated "$app_name" "${version}-${revision}" || true

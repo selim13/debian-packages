@@ -1,29 +1,26 @@
 #!/usr/bin/env bash
 
-app_name=docker-ctop
-github_repo="bcicen/ctop"
+app_name=oha
+github_repo="hatoo/oha"
 revision=1
-description="Top-like interface for container metrics"
-homepage="https://github.com/bcicen/ctop"
+description="HTTP load generator, inspired by rakyll/hey with tui animation"
+homepage="https://github.com/hatoo/oha"
 license="MIT"
 
-source ../.env
-source ../functions.sh
+source ../../functions.sh
 set -e
 
 tag=$(github_latest_tag $github_repo)
 version=$(echo $tag | sed s/v//)
 declare -A archs=(
-    [amd64]="ctop-${version}-linux-amd64"
-    [arm64]="ctop-${version}-linux-arm64"
-    [arm32]="ctop-${version}-linux-arm32"
+    [amd64]="oha-linux-amd64"
 )
 
 for arch in "${!archs[@]}"; do
     filename=${archs[$arch]}
     package_name="${app_name}_${version}-${revision}_${arch}"
 
-    if deb_exists "$package_name"; then
+    if deb_exists "$app_name" "${version}-${revision}" "$arch"; then
         echo "$package_name already in repository"
         continue
     fi
@@ -44,7 +41,7 @@ for arch in "${!archs[@]}"; do
     echo "License: ${license}" >> "$package_name/DEBIAN/control"
 
     curl --silent --location "https://github.com/${github_repo}/releases/download/${tag}/${filename}" --output "$filename"
-    install "$filename" "$package_name/usr/bin/ctop"    
+    install "$filename" "$package_name/usr/bin/oha"    
 
     fakeroot dpkg-deb --build "$package_name"    
     push_deb "$package_name.deb"
@@ -55,6 +52,4 @@ for arch in "${!archs[@]}"; do
     updated=true
 done
 
-if [ ! -z $updated ]; then
-    notify_updated "$app_name" "${version}-${revision}"
-fi
+[ ! -z $updated ] && notify_updated "$app_name" "${version}-${revision}" || true

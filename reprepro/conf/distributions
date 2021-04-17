@@ -1,0 +1,8 @@
+Origin: deb.selim13.ru
+Suite: stable
+Codename: sid
+Architectures: i386 amd64 armhf arm64
+Components: main
+Description: Selim's personal debian repository
+#Update: debian non-US security
+#SignWith: yes

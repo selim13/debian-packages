@@ -1,34 +1,33 @@
 #!/usr/bin/env bash
 
-app_name=oha
-github_repo="hatoo/oha"
+app_name=docker-ctop
+github_repo="bcicen/ctop"
 revision=1
-description="HTTP load generator, inspired by rakyll/hey with tui animation"
-homepage="https://github.com/hatoo/oha"
+description="Top-like interface for container metrics"
+homepage="https://github.com/bcicen/ctop"
 license="MIT"
 
-source ../.env
-source ../functions.sh
+source ../../functions.sh
 set -e
 
 tag=$(github_latest_tag $github_repo)
 version=$(echo $tag | sed s/v//)
 declare -A archs=(
-    [amd64]="oha-linux-amd64"
+    [amd64]="ctop-${version}-linux-amd64"
+    [arm64]="ctop-${version}-linux-arm64"
+    [armhf]="ctop-${version}-linux-arm32"
 )
 
 for arch in "${!archs[@]}"; do
     filename=${archs[$arch]}
     package_name="${app_name}_${version}-${revision}_${arch}"
 
-    if deb_exists "$package_name"; then
+    if deb_exists "$app_name" "${version}-${revision}" "$arch"; then
         echo "$package_name already in repository"
         continue
     fi
 
-    mkdir -p "$package_name"
-    mkdir -p "$package_name/usr/bin"
-    mkdir -p "$package_name/DEBIAN"
+    mkdir -p "$package_name/usr/bin" "$package_name/DEBIAN"
 
     echo "Package: ${app_name}" > "$package_name/DEBIAN/control"
     echo "Version: ${version}-${revision}" >> "$package_name/DEBIAN/control"
@@ -42,17 +41,14 @@ for arch in "${!archs[@]}"; do
     echo "License: ${license}" >> "$package_name/DEBIAN/control"
 
     curl --silent --location "https://github.com/${github_repo}/releases/download/${tag}/${filename}" --output "$filename"
-    install "$filename" "$package_name/usr/bin/oha"    
+    install "$filename" "$package_name/usr/bin/ctop"    
 
     fakeroot dpkg-deb --build "$package_name"    
     push_deb "$package_name.deb"
 
-    rm -rf "$package_name" "$package_name.deb"
-    rm -f "$filename"
-
+    rm -rf "$package_name" "$package_name.deb" "$filename"
+    
     updated=true
 done
 
-if [ ! -z $updated ]; then
-    notify_updated "$app_name" "${version}-${revision}"
-fi
+[ ! -z $updated ] && notify_updated "$app_name" "${version}-${revision}" || true

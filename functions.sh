@@ -27,14 +27,17 @@ tg_send_error() {
 }
 
 deb_exists() {
-    local package_name="$1"
-
-    [ ! -z "$(aptly package show ${package_name})" ]
+    local name="$1"
+    local version="$2"
+    local arch="$3"
+    
+    [ ! -z "$(reprepro --basedir "$REPREPRO_BASE_PATH" --outdir "$REPOSITORY_PATH" listfilter $CODENAME "Package (== $name), Version (== $version), Architecture (== $arch)")" ]
 }
 
 push_deb() {
     local filename="$1"
-    aptly repo add deb-cli "$filename"
+
+    reprepro --basedir "$REPREPRO_BASE_PATH" --outdir "$REPOSITORY_PATH" includedeb sid "$filename"    
 }
 
 notify_updated() {

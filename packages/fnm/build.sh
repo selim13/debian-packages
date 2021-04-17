@@ -1,30 +1,28 @@
 #!/usr/bin/env bash
 
-github_repo="starship/starship"
-app_name=starship
+app_name=fnm
+github_repo="Schniz/fnm"
 revision=1
-description="The minimal, blazing-fast, and infinitely customizable prompt for any shell!"
-homepage="https://starship.rs"
+description="Fast and simple Node.js version manager, built in Rust"
+homepage="https://github.com/Schniz/fnm"
 license="GPL3"
 
-source ../.env
-source ../functions.sh
+source ../../functions.sh
 set -e
 
 tag=$(github_latest_tag $github_repo)
 version=$(echo $tag | sed s/v//)
 declare -A archs=(
-    [amd64]=starship-x86_64-unknown-linux-musl.tar.gz
-    [i386]=starship-i686-unknown-linux-musl.tar.gz
-    [arm64]=starship-aarch64-unknown-linux-musl.tar.gz
-    [arm32]=starship-arm-unknown-linux-musleabihf.tar.gz
+    [amd64]=fnm-linux.zip
+    [arm64]=fnm-arm64.zip
+    [armhf]=fnm-arm32.zip
 )
 
 for arch in "${!archs[@]}"; do
     filename=${archs[$arch]}
     package_name="${app_name}_${version}-${revision}_${arch}"
 
-    if deb_exists "$package_name"; then
+    if deb_exists "$app_name" "${version}-${revision}" "$arch"; then
         echo "$package_name already in repository"
         continue
     fi
@@ -45,10 +43,10 @@ for arch in "${!archs[@]}"; do
     echo "License: ${license}" >> "$package_name/DEBIAN/control"
 
     curl --silent --location "https://github.com/${github_repo}/releases/download/${tag}/${filename}" --output "$filename"
-    tar --extract --file="$filename" --directory="$package_name/usr/bin" starship
-    chmod 755 "$package_name/usr/bin/starship"
+    unzip -q -o -j -d "$package_name/usr/bin" $filename
+    chmod 755 "$package_name/usr/bin/fnm"
 
-    fakeroot dpkg-deb --build "$package_name"
+    fakeroot dpkg-deb --build "$package_name"    
     push_deb "$package_name.deb"
 
     rm -rf "$package_name" "$package_name.deb"
@@ -57,6 +55,4 @@ for arch in "${!archs[@]}"; do
     updated=true
 done
 
-if [ ! -z $updated ]; then
-    notify_updated "$app_name" "${version}-${revision}"
-fi
+[ ! -z $updated ] && notify_updated "$app_name" "${version}-${revision}" || true

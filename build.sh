@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
 
-source .env
+[ -f .env ] && set -o allexport && source .env set && set +o allexport
 source ./functions.sh
+
+mkdir -p "$REPREPRO_BASE_PATH" "$PUBLIC_PATH" "$REPOSITORY_PATH"
 
 declare -a packages=(
     docker-ctop
@@ -18,8 +20,8 @@ declare -a packages=(
 )
 
 for package in "${packages[@]}"; do
-    if result=$((cd $package; ./build.sh) 2>&1); then
-        log_info "$package"
+    if result=$((cd packages/$package; ./build.sh) 2>&1); then
+        log_info "Building $package"
         log_info "$result"
         log_info ""
     else

@@ -3,8 +3,7 @@
 app_name=lando
 github_repo="lando/lando"
 
-source ../.env
-source ../functions.sh
+source ../../functions.sh
 set -e
 
 tag=$(github_latest_tag $github_repo)
@@ -17,18 +16,16 @@ for arch in "${!archs[@]}"; do
     filename=${archs[$arch]}
     package_name="${app_name}_${version}_${arch}"
 
-    if deb_exists "$package_name"; then
+    if deb_exists "$app_name" "${version}" "$arch"; then
         echo "$package_name already in repository"
         continue
     fi
 
-    curl --silent --location "https://github.com/${github_repo}/releases/download/${tag}/${filename}" --output "$filename"    
-    push_deb "$package_name.deb"
-    rm -f "$package_name.deb"
+    curl --silent --location "https://github.com/${github_repo}/releases/download/${tag}/${filename}" --output "$filename"
+    push_deb "$filename"
+    rm -f "$filename"
 
     updated=true
 done
 
-if [ ! -z $updated ]; then
-    notify_updated "$app_name" "${version}-${revision}"
-fi
+[ ! -z $updated ] && notify_updated "$app_name" "${version}" || true

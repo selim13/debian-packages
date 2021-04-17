@@ -7,8 +7,7 @@ description="Ping, but with a graph"
 homepage="https://github.com/orf/gping"
 license="MIT"
 
-source ../.env
-source ../functions.sh
+source ../../functions.sh
 set -e
 
 tag=$(github_latest_tag $github_repo)
@@ -16,14 +15,14 @@ version=$(echo $tag | sed s/v//)
 declare -A archs=(
     [amd64]="gping-x86_64-unknown-linux-musl.tar.gz"
     [arm64]="gping-aarch64-unknown-linux-musl.tar.gz"
-    [arm32]="gping-armv7-unknown-linux-musleabihf.tar.gz"
+    [armhf]="gping-armv7-unknown-linux-musleabihf.tar.gz"
 )
 
 for arch in "${!archs[@]}"; do
     filename=${archs[$arch]}
     package_name="${app_name}_${version}-${revision}_${arch}"
 
-    if deb_exists "$package_name"; then
+    if deb_exists "$app_name" "${version}-${revision}" "$arch"; then
         echo "$package_name already in repository"
         continue
     fi
@@ -57,6 +56,4 @@ for arch in "${!archs[@]}"; do
     updated=true
 done
 
-if [ ! -z $updated ]; then
-    notify_updated "$app_name" "${version}-${revision}"
-fi
+[ ! -z $updated ] && notify_updated "$app_name" "${version}-${revision}" || true
