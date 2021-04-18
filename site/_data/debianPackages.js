@@ -1,4 +1,3 @@
-const semver = require('semver');
 const { readFile } = require('fs/promises');
 const { createReadStream } = require('fs');
 const { parse, ParagraphStream } = require('debian-control');
@@ -48,12 +47,7 @@ function readArchPackages(repoPath, distr, component, arch, packages = {}) {
       }
 
       const package = packages[repoPackage.Package];
-      if (semver.gt(repoPackage.Version, package.version)) {
-        packages[repoPackage.Package] = repoToSitePackage(repoPackage);
-        return;
-      }
-
-      if (semver.eq(repoPackage.Version, package.version)) {
+      if (repoPackage.Version === package.version) {
         const archExists = package.archs.some(
           (arch) => arch.name === repoPackage.Architecture
         );
