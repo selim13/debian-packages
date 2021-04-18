@@ -7,6 +7,7 @@
 
 /public
 /reprepro/db
+/reprepro/conf/distributions
 /volumes
 /site/node_modules
 /site/_site

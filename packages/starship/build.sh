@@ -14,7 +14,6 @@ tag=$(github_latest_tag $github_repo)
 version=$(echo $tag | sed s/v//)
 declare -A archs=(
     [amd64]=starship-x86_64-unknown-linux-musl.tar.gz
-    [i386]=starship-i686-unknown-linux-musl.tar.gz
     [arm64]=starship-aarch64-unknown-linux-musl.tar.gz
     [armhf]=starship-arm-unknown-linux-musleabihf.tar.gz
 )

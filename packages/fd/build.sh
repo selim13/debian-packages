@@ -10,7 +10,6 @@ tag=$(github_latest_tag $github_repo)
 version=$(echo $tag | sed s/v//)
 declare -A archs=(
     [amd64]=fd_${version}_amd64.deb
-    [i386]=fd_${version}_i386.deb
     [armhf]=fd_${version}_armhf.deb
 )
 

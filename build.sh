@@ -3,7 +3,8 @@
 [ -f .env ] && set -o allexport && source .env set && set +o allexport
 source ./functions.sh
 
-mkdir -p "$REPREPRO_BASE_PATH" "$PUBLIC_PATH" "$REPOSITORY_PATH"
+preflight_check
+configure_reprepro
 
 declare -a packages=(
     docker-ctop

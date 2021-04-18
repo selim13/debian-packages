@@ -8,6 +8,6 @@ repository managing tool.
 
 Tools required:
 ```
-sudo apt install dpkg jq wget tar unzip
+sudo apt install dpkg fakeroot jq tar unzip
 ```
 * [Apty](https://www.aptly.info)

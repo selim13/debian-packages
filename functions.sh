@@ -1,6 +1,46 @@
+function preflight_check() {
+    local binaries=(curl dpkg-deb fakeroot gpg jq reprepro tar unzip)
+    for binary in "${binaries[@]}"; do
+        >/dev/null command -v "$binary" || { log_error "$binary is not installed"; exit 1; }
+    done
+
+    local variables=(
+        REPREPRO_BASE_PATH
+        PUBLIC_PATH
+        REPO_PATH
+        REPO_CODENAME
+    )
+    for var in "${variables[@]}"; do
+        [ -z "${!var}" ] && { log_error "\$${var} is not set"; exit 1; }
+    done
+
+    if [ ! -z "$GPG_KEY" ]; then
+        if ! $(gpg --list-keys --keyid-format=long | grep --word-regexp --quiet $GPG_KEY); then
+            log_error "$GPG_KEY is not found"
+            exit 1
+        fi
+    fi 
+
+    mkdir -p "$REPREPRO_BASE_PATH" "$PUBLIC_PATH" "$REPO_PATH"
+}
+
+function configure_reprepro {
+    local file="$REPREPRO_BASE_PATH/conf/distributions"
+    [ -f "$file" ] && return;
+
+    echo -n "" > "$file";
+    [ ! -z "$REPO_ORIGIN" ] && echo "Origin: $REPO_ORIGIN" >> "$file"
+    [ ! -z "$REPO_SUITE" ] && echo "Suite: $REPO_SUITE" >> "$file"
+    [ ! -z "$REPO_CODENAME" ] && echo "Codename: $REPO_CODENAME" >> "$file"
+    [ ! -z "$REPO_ARCHITECTURES" ] && echo "Architectures: $REPO_ARCHITECTURES" >> "$file"
+    [ ! -z "$REPO_COMPONENTS" ] && echo "Components: $REPO_COMPONENTS" >> "$file"
+    [ ! -z "$REPO_DESCRIPTION" ] && echo "Description: $REPO_DESCRIPTION" >> "$file"
+    [ ! -z "$GPG_KEY" ] && echo "SignWith: $GPG_KEY" >> "$file"    
+}
+
+
 tg_send_message() {
     if [[ -z "$TG_TOKEN" || -z "$TG_CHAT_ID" ]]; then
-        echo 'Skipping telegram: missing $TG_TOKEN or $TG_CHAT_ID'
         return
     fi
 
@@ -31,13 +71,13 @@ deb_exists() {
     local version="$2"
     local arch="$3"
     
-    [ ! -z "$(reprepro --basedir "$REPREPRO_BASE_PATH" --outdir "$REPOSITORY_PATH" listfilter $CODENAME "Package (== $name), Version (== $version), Architecture (== $arch)")" ]
+    [ ! -z "$(reprepro --basedir "$REPREPRO_BASE_PATH" --outdir "$REPO_PATH" listfilter $REPO_CODENAME "Package (== $name), Version (== $version), Architecture (== $arch)")" ]
 }
 
 push_deb() {
     local filename="$1"
 
-    reprepro --basedir "$REPREPRO_BASE_PATH" --outdir "$REPOSITORY_PATH" includedeb sid "$filename"    
+    reprepro --basedir "$REPREPRO_BASE_PATH" --outdir "$REPO_PATH" includedeb sid "$filename"    
 }
 
 notify_updated() {
@@ -52,7 +92,7 @@ log_info() {
 
     echo "$@"
 
-    if [[ ! -z "$INFO_LOG" ]]; then
+    if [ ! -z "$INFO_LOG" ]; then
         echo "$@" >> "$INFO_LOG"
     fi
 }
@@ -62,7 +102,7 @@ log_error() {
 
     >&2 echo "$@"
 
-    if [[ ! -z "$ERROR_LOG" ]]; then
+    if [ ! -z "$ERROR_LOG" ]; then
         echo "$@" >> "$ERROR_LOG"
     fi
 }
