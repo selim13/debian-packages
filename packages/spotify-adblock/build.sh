@@ -5,7 +5,7 @@ github_repo="abba23/spotify-adblock-linux"
 revision=1
 description="Spotify adblocker for Linux"
 homepage="https://github.com/abba23/spotify-adblock-linux"
-license="MIT"
+license="GPL3"
 
 source ../../functions.sh
 set -e
