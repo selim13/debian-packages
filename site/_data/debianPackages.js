@@ -79,12 +79,12 @@ function readArchPackages(repoPath, distr, component, arch, packages = {}) {
 }
 
 async function debianPackages() {
-  const repoPath = process.env.SITE_REPO_PATH;
-  const distr = process.env.SITE_REPO_DIST;
+  const repoPath = process.env.REPO_PATH;
+  const distr = process.env.REPO_CODENAME;
 
   if (!repoPath || !distr) {
     throw new Error(
-      'SITE_REPO_PATH or SITE_REPO_DIST environment variables are not set'
+      'REPO_PATH or REPO_CODENAME environment variables are not set'
     );
   }
 
@@ -105,7 +105,15 @@ async function debianPackages() {
     }
   }
 
-  return Object.values(packages);
+  let arr = Object.values(packages);
+  arr.sort((a, b) => {
+    const nameA = a.name.toUpperCase();
+    const nameB = b.name.toUpperCase();
+
+    return nameA < nameB ? -1 : nameA > nameB ? 1 : 0;
+  });
+
+  return arr;
 }
 
 module.exports = debianPackages;

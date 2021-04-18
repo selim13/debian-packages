@@ -21,8 +21,8 @@ declare -a packages=(
 )
 
 for package in "${packages[@]}"; do
+    log_info "Building $package"
     if result=$((cd packages/$package; ./build.sh) 2>&1); then
-        log_info "Building $package"
         log_info "$result"
         log_info ""
     else
@@ -34,3 +34,8 @@ for package in "${packages[@]}"; do
         exit 1
     fi
 done
+
+key_file="$REPO_PATH/repo.gpg.key"
+[[ ! -z "$GPG_KEY" && ! -f "$key_file" ]] && gpg --export --armor "$GPG_KEY" > "$key_file"
+
+(cd site; yarn build)

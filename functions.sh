@@ -21,7 +21,7 @@ function preflight_check() {
         fi
     fi 
 
-    mkdir -p "$REPREPRO_BASE_PATH" "$PUBLIC_PATH" "$REPO_PATH"
+    mkdir -p "$REPREPRO_BASE_PATH/conf" "$PUBLIC_PATH" "$REPO_PATH"
 }
 
 function configure_reprepro {
@@ -55,7 +55,7 @@ tg_send_update() {
     local message="$2"
 
     local br="%0A"
-    tg_send_message "✅ <a href='http://deb.selim13.ru'>deb.selim13.ru</a>${br}${br}<b>${name}</b>${br}${message}"    
+    tg_send_message "✅ <a href='${SITE_URL}'>${REPO_ORIGIN}</a>${br}${br}<b>${name}</b>${br}${message}"    
 }
 
 tg_send_error() {
@@ -63,7 +63,7 @@ tg_send_error() {
     local message="$2"
 
     local br="%0A"
-    tg_send_message "❌ <a href='http://deb.selim13.ru'>deb.selim13.ru</a>${br}${br}<b>${name}</b>${br}${message}"    
+    tg_send_message "❌ <a href='${SITE_URL}'>${REPO_ORIGIN}</a>${br}${br}<b>${name}</b>${br}${message}"    
 }
 
 deb_exists() {

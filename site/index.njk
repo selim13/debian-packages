@@ -80,8 +80,8 @@
       </p>
 
       <p>To use this repository, populate your apt sources list and import the GPG key:</p>
-      <pre>echo "deb http://deb.selim13.ru/repo/ sid main" | sudo tee /etc/apt/sources.list.d/deb-selim13-ru.list
-wget -qO - http://deb.selim13.ru/repo.gpg.key | sudo apt-key add -</pre>
+      <pre>echo "deb https://packages.selim13.ru/debian/ sid main" | sudo tee /etc/apt/sources.list.d/packages-selim13-ru.list
+wget -qO - https://packages.selim13.ru/debian/repo.gpg.key | sudo apt-key add -</pre>
 
       <ul>
         {% for package in debianPackages %}
@@ -102,15 +102,15 @@ wget -qO - http://deb.selim13.ru/repo.gpg.key | sudo apt-key add -</pre>
             {% set j = joiner(" ") %}
             [{% for arch in package.archs -%}
               {{- j() -}}
-              <a href="/repo/{{ arch.file }}">{{ arch.name }}</a>
+              <a href="/debian/{{ arch.file }}">{{ arch.name }}</a>
             {%- endfor %}]
           </li>
         {% endfor %}
       </ul>
 
       <p>
-        <a href="/repo/">Repository directory listing</a><br>
-        <a href="https://github.com/selim13/linux-packages/">
+        <a href="/debian/">Repository directory listing</a><br>
+        <a href="https://github.com/selim13/debian-packages/">
           Scripts for updating packages and this page
         </a>
       </p>

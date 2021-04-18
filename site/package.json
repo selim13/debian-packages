@@ -5,7 +5,7 @@
   "license": "MIT",
   "scripts": {
     "start": "eleventy --serve dotenv_config_path=../.env",
-    "build": "eleventy dotenv_config_path=../.env"
+    "build": "eleventy dotenv_config_path=../.env --output=../public"
   },
   "devDependencies": {
     "@11ty/eleventy": "^0.12.1",
