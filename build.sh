@@ -17,6 +17,7 @@ declare -a packages=(
     oha
     psysh
     ripgrep
+    spotify-adblock
     starship
     wp-cli
 )
