@@ -13,6 +13,7 @@ declare -a packages=(
     fnm
     gping
     lando
+    lf
     oha
     psysh
     ripgrep
