@@ -7,7 +7,6 @@ description='Edit directory in $EDITOR (better than vim . with netrw) '
 homepage="https://github.com/trapd00r/vidir"
 license="GPL3"
 
-source ../../.env
 source ../../functions.sh
 set -e
 
