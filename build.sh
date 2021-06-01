@@ -11,6 +11,7 @@ declare -a packages=(
     exa
     fd
     fnm
+    fzf
     gping
     lando
     lf
