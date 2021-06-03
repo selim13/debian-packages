@@ -20,6 +20,7 @@ declare -A archs=(
 
 for arch in "${!archs[@]}"; do
     filename=${archs[$arch]}
+    sourcefile="${tag}.tar.gz"
     package_name="${app_name}_${version}-${revision}_${arch}"
 
     if deb_exists "$app_name" "${version}-${revision}" "$arch"; then
@@ -30,7 +31,11 @@ for arch in "${!archs[@]}"; do
     tmp_dir="$(mktemp -d ./package-$arch.XXXXXXXXXX)"
     cd "$tmp_dir"
 
-    mkdir -p "$package_name/usr/bin" "$package_name/DEBIAN"
+    mkdir -p "$package_name/usr/bin/" 
+    mkdir -p "$package_name/DEBIAN/" 
+    mkdir -p "$package_name/usr/share/doc/fzf/examples/"
+    mkdir -p "$package_name/usr/share/doc/fzf/examples/plugin/"
+    mkdir -p "$package_name/usr/share/man/man1/"
 
     echo "Package: ${app_name}" > "$package_name/DEBIAN/control"
     echo "Version: ${version}-${revision}" >> "$package_name/DEBIAN/control"
@@ -43,10 +48,20 @@ for arch in "${!archs[@]}"; do
     echo "Homepage: ${homepage}" >> "$package_name/DEBIAN/control"
     echo "License: ${license}" >> "$package_name/DEBIAN/control"
 
+    # fzf binary
     curl --silent --location "https://github.com/${github_repo}/releases/download/${tag}/${filename}" --output "$filename"
-
     tar --extract --file="$filename" fzf
-    install fzf "$package_name/usr/bin/fzf"
+    install fzf "$package_name/usr/bin/"
+
+    # fzf-tmux script, shell completion, bindings, man pages
+    curl --silent --location "https://github.com/${github_repo}/archive/refs/tags/${sourcefile}" --output "$sourcefile"
+    mkdir ./source
+    tar --extract --file="$sourcefile" --strip-components=1 --directory=./source
+    install ./source/bin/fzf-tmux "$package_name/usr/bin/"
+    install --mode=644 ./source/shell/* "$package_name/usr/share/doc/fzf/examples/"
+    install --mode=644 ./source/plugin/fzf.vim "$package_name/usr/share/doc/fzf/examples/plugin/"
+    gzip -9 ./source/man/man1/*.1
+    install --mode=644 ./source/man/man1/*.1.gz "$package_name/usr/share/man/man1/"
 
     fakeroot dpkg-deb --build "$package_name"    
     push_deb "$package_name.deb"
