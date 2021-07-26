@@ -11,7 +11,7 @@ source ../../functions.sh
 set -e
 
 tag=$(github_latest_tag $github_repo)
-version=$(echo $tag | sed s/v//)
+version=$(echo $tag | sed s/gping-v//)
 declare -A archs=(
     [amd64]="gping-x86_64-unknown-linux-musl.tar.gz"
     [arm64]="gping-aarch64-unknown-linux-musl.tar.gz"

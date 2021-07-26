@@ -4,6 +4,7 @@
 *.zip
 *.gz
 *.log
+*.gpg.key
 
 /public
 /reprepro/db

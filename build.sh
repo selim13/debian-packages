@@ -24,7 +24,15 @@ declare -a packages=(
     wp-cli
 )
 
-for package in "${packages[@]}"; do
+if [ $# -gt 0 ]; then
+    build=$@
+else
+    build=${packages[@]}
+fi
+
+for package in $build; do
+    [ ! -d "packages/$package" ] && echo "Build script for $package not found" && exit 1
+
     log_info "Building $package"
     if result=$((cd packages/$package; ./build.sh) 2>&1); then
         log_info "$result"
