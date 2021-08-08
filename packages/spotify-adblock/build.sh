@@ -1,10 +1,11 @@
 #!/usr/bin/env bash
 
 app_name="spotify-adblock"
-github_repo="abba23/spotify-adblock-linux"
+github_repo="abba23/spotify-adblock"
 revision=1
+epoch=1 # spotify-adblock restarted numeration system after rewrite on rust
 description="Spotify adblocker for Linux"
-homepage="https://github.com/abba23/spotify-adblock-linux"
+homepage="https://github.com/abba23/spotify-adblock"
 license="GPL3"
 
 source ../../functions.sh
@@ -18,9 +19,9 @@ declare -A archs=(
 
 for arch in "${!archs[@]}"; do
     filename=${archs[$arch]}
-    package_name="${app_name}_${version}-${revision}_${arch}"
+    package_name="${app_name}_${epoch}:${version}-${revision}_${arch}"
 
-    if deb_exists "$app_name" "${version}-${revision}" "$arch"; then
+    if deb_exists "$app_name" "${epoch}:${version}-${revision}" "$arch"; then
         echo "$package_name already in repository"
         continue
     fi
@@ -28,7 +29,7 @@ for arch in "${!archs[@]}"; do
     mkdir -p "$package_name/DEBIAN" 
 
     echo "Package: ${app_name}" > "$package_name/DEBIAN/control"
-    echo "Version: ${version}-${revision}" >> "$package_name/DEBIAN/control"
+    echo "Version: ${epoch}:${version}-${revision}" >> "$package_name/DEBIAN/control"
     echo "Section: custom" >> "$package_name/DEBIAN/control"
     echo "Priority: optional" >> "$package_name/DEBIAN/control"
     echo "Architecture: ${arch}" >> "$package_name/DEBIAN/control"
@@ -39,6 +40,7 @@ for arch in "${!archs[@]}"; do
     echo "License: ${license}" >> "$package_name/DEBIAN/control"
 
     curl --silent --location "https://github.com/${github_repo}/releases/download/${tag}/${filename}" --output "$filename"
+    curl --silent --location "https://raw.githubusercontent.com/abba23/spotify-adblock/${tag}/config.toml" --output "config.toml"
 
     mkdir -p "$package_name/usr/lib/"
     install -m644 spotify-adblock.so "$package_name/usr/lib/"
@@ -46,10 +48,16 @@ for arch in "${!archs[@]}"; do
     mkdir -p "$package_name/usr/bin/"
     install bin/spotify-adblock "$package_name/usr/bin/"
 
+    mkdir -p "$package_name/usr/share/applications/"
+    install spotify-adblock.desktop "$package_name/usr/share/applications/"
+    
+    mkdir -p "$package_name/etc/spotify-adblock/"
+    install config.toml "$package_name/etc/spotify-adblock/"
+
     fakeroot dpkg-deb --build "$package_name"    
     push_deb "$package_name.deb"
 
-    rm -rf tmp "$package_name" "$package_name.deb" "$filename"        
+    rm -rf spotify-adblock.so config.toml "$package_name" "$package_name.deb" "$filename"        
     updated=true
 done
 
