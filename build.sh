@@ -20,6 +20,7 @@ declare -a packages=(
     ripgrep
     spotify-adblock
     starship
+    v2ray
     vidir
     wp-cli
 )
