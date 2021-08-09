@@ -7,7 +7,6 @@ description="A platform for building proxies to bypass network restrictions."
 homepage="https://github.com/v2fly/v2ray-core"
 license="MIT"
 
-source ../../.env
 source ../../functions.sh
 set -e
 
@@ -32,8 +31,8 @@ for arch in "${!archs[@]}"; do
     mkdir -p tmp
     cd tmp
 
-    mkdir -p "$package_name/DEBIAN"    
-    
+    mkdir -p "$package_name/DEBIAN"
+
     echo "Package: ${app_name}" > "$package_name/DEBIAN/control"
     echo "Version: ${package_version}" >> "$package_name/DEBIAN/control"
     echo "Section: custom" >> "$package_name/DEBIAN/control"
@@ -47,7 +46,7 @@ for arch in "${!archs[@]}"; do
 
     curl --silent --location "https://github.com/${github_repo}/releases/download/${tag}/${filename}" --output "$filename"
     unzip -q -o "$filename" -d .
-    
+
     install -Dm755 v2ctl -t "$package_name/usr/bin/"
     install -Dm755 v2ray -t "$package_name/usr/bin/"
     install -Dm644 config.json -t "$package_name/etc/v2ray/"
@@ -63,12 +62,12 @@ for arch in "${!archs[@]}"; do
     sed -i 's!/usr/local/bin/!/usr/bin/!g' "$package_name/etc/systemd/system/v2ray@.service"
     sed -i 's!/usr/local/etc/!/etc/!g' "$package_name/etc/systemd/system/v2ray@.service"
 
-    
+
     fakeroot dpkg-deb --build "$package_name"
-    #push_deb "$package_name.deb"
+    push_deb "$package_name.deb"
 
     cd ..
-    #rm -rf tmp    
+    rm -rf tmp
 
     updated=true
 done
