@@ -9,7 +9,7 @@ set -e
 tag=$(github_latest_tag $github_repo)
 version=$(echo $tag | sed s/v//)
 declare -A archs=(
-    [amd64]="lando-${tag}.deb"
+    [amd64]="lando-x64-${tag}.deb"
 )
 
 for arch in "${!archs[@]}"; do
