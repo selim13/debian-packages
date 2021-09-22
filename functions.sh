@@ -38,7 +38,6 @@ function configure_reprepro {
     [ ! -z "$GPG_KEY" ] && echo "SignWith: $GPG_KEY" >> "$file"    
 }
 
-
 tg_send_message() {
     if [[ -z "$TG_TOKEN" || -z "$TG_CHAT_ID" ]]; then
         return
@@ -47,7 +46,7 @@ tg_send_message() {
     local message="$1"
     local url="https://api.telegram.org/bot${TG_TOKEN}/sendMessage"
 
-    curl --silent --request POST "$url" --data chat_id="$TG_CHAT_ID" --data parse_mode="HTML" --data text="$message" > /dev/null
+    curl --silent --show-error --fail --request POST "$url" --data chat_id="$TG_CHAT_ID" --data parse_mode="Markdown" --data text="$message" > /dev/null
 }
 
 tg_send_update() {
@@ -55,7 +54,7 @@ tg_send_update() {
     local message="$2"
 
     local br="%0A"
-    tg_send_message "✅ <a href='${SITE_URL}'>${REPO_ORIGIN}</a>${br}${br}<b>${name}</b>${br}${message}"    
+    tg_send_message "✅ [${SITE_URL}](${REPO_ORIGIN})${br}${br}*${name}*${br}${message}"
 }
 
 tg_send_error() {
@@ -63,7 +62,7 @@ tg_send_error() {
     local message="$2"
 
     local br="%0A"
-    tg_send_message "❌ <a href='${SITE_URL}'>${REPO_ORIGIN}</a>${br}${br}<b>${name}</b>${br}${message}"    
+    tg_send_message "❌ [${SITE_URL}](${REPO_ORIGIN})${br}${br}*${name}*${br}${message}"
 }
 
 deb_exists() {
