@@ -44,7 +44,7 @@ for package in $build; do
         log_error ""
 
         tg_send_error "$package" "$result"
-        exit 1
+        # exit 1
     fi
 done
 
