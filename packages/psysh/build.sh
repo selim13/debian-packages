@@ -13,7 +13,7 @@ set -e
 tag=$(github_latest_tag $github_repo)
 version=$(echo $tag | sed s/v//)
 declare -A archs=(
-    [all]="psysh-${tag}-compat.tar.gz"
+    [all]="psysh-${tag}-php70-compat.tar.gz"
 )
 
 for arch in "${!archs[@]}"; do
